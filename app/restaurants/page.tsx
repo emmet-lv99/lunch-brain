@@ -24,9 +24,16 @@ export default function RestaurantsPage() {
     if (newRestaurants.length === 0) {
       setHasMore(false);
     } else {
-      setRestaurants(prev => [...prev, ...newRestaurants]);
+      setRestaurants(prev => {
+        // 🐯 기존 리스트에 이미 있는 ID는 제외하고 추가합니다 (중복 키 에러 방지)
+        const existingIds = new Set(prev.map(r => r.id));
+        const filteredNew = newRestaurants.filter(r => !existingIds.has(r.id));
+        return [...prev, ...filteredNew];
+      });
       setTotalCount(total);
       setPage(currentPage + 1);
+      
+      // 🐯 전체 개수에 도달했는지 확인
       if (restaurants.length + newRestaurants.length >= total) {
         setHasMore(false);
       }
